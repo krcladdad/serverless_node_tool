@@ -1,0 +1,1 @@
+docker_image = "kladdad/flask-app:latest"

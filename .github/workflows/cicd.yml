@@ -25,6 +25,9 @@ jobs:
       - name: Syntax check
         run: python -m py_compile app.py
 
+      - name: Test message
+        run: echo "First stage passed successfully!"
+
       # - name: Run unit tests
       #   env:
       #     AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
@@ -50,8 +53,8 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/flask-app:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
 
-      - name: success message
-        run: echo "Tests passed successfully!"
+      - name: Docker message
+        run: echo "Second stage passed successfully!"
 
   terraform:
     needs: docker
@@ -74,3 +77,8 @@ jobs:
         working-directory: terraform
         env:
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECURITY_ACCESS_KEY: ${{ secrets.AWS_SECURITY_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          
+      - name: Terraform message
+        run: echo "All stages passed successfully!"
