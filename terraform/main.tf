@@ -1,9 +1,8 @@
- provider "aws" {
+provider "aws" {
   region = var.region
- }
+}
 
-# Use a recent Amazon Linux 2 AMI (portable across regions)
-data "aws_ami" "amazon_linux_2" {
+ data "aws_ami" "amazon_linux_2" {
   most_recent = true
   owners      = ["amazon"]
 
@@ -13,32 +12,30 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-# Generate an SSH key for the instance (dev convenience). In production, you may prefer to manage keys externally.
-resource "tls_private_key" "ssh_key" {
+ resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-resource "aws_key_pair" "generated" {
+ resource "aws_key_pair" "generated" {
   key_name   = var.key_name
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
-# Default VPC/subnet selection so instance launches into a subnet with public IP
-data "aws_vpc" "default" {
+ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnet_ids" "default" {
+ data "aws_subnet_ids" "default" {
   vpc_id = data.aws_vpc.default.id
 }
 
-# Security Group - allow SSH, HTTP and HTTPS ingress. Egress is unrestricted (0.0.0.0/0).
-resource "aws_security_group" "flask_sg" {
+ resource "aws_security_group" "flask_sg" {
   name        = "flask-app-sg"
-  description = "Allow SSH, HTTP and HTTPS inbound"
+  description = "Allow SSH, HTTP, HTTPS, 8080 and 5000 (and optionally all inbound)"
   vpc_id      = data.aws_vpc.default.id
 
+  # SSH
   ingress {
     from_port   = 22
     to_port     = 22
@@ -46,6 +43,7 @@ resource "aws_security_group" "flask_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTP
   ingress {
     from_port   = 80
     to_port     = 80
@@ -53,6 +51,7 @@ resource "aws_security_group" "flask_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # HTTPS
   ingress {
     from_port   = 443
     to_port     = 443
@@ -60,6 +59,22 @@ resource "aws_security_group" "flask_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Alternate HTTP / app ports
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Egress - allow all outbound
   egress {
     from_port   = 0
     to_port     = 0
@@ -72,13 +87,24 @@ resource "aws_security_group" "flask_sg" {
   }
 }
 
+# Optional: an explicit rule to open all inbound traffic when requested (useful for quick dev testing)
+ resource "aws_security_group_rule" "open_all_inbound" {
+  count            = var.open_all_inbound ? 1 : 0
+  type             = "ingress"
+  security_group_id = aws_security_group.flask_sg.id
+  from_port        = 0
+  to_port          = 0
+  protocol         = "-1"
+  cidr_blocks      = ["0.0.0.0/0"]
+}
+
 resource "aws_instance" "flask_app" {
-  ami                    = data.aws_ami.amazon_linux_2.id
-  instance_type          = var.instance_type
-  subnet_id              = data.aws_subnet_ids.default.ids[0]
-  associate_public_ip_address = true
-  vpc_security_group_ids = [aws_security_group.flask_sg.id]
-  key_name               = aws_key_pair.generated.key_name
+  ami                           = data.aws_ami.amazon_linux_2.id
+  instance_type                 = var.instance_type
+  subnet_id                     = data.aws_subnet_ids.default.ids[0]
+  associate_public_ip_address   = true
+  vpc_security_group_ids        = [aws_security_group.flask_sg.id]
+  key_name                      = aws_key_pair.generated.key_name
 
   user_data = <<-EOF
               #!/bin/bash
@@ -94,8 +120,7 @@ resource "aws_instance" "flask_app" {
   }
 }
 
-# Allocate an EIP and associate it with the instance so it has a stable public IPv4
-resource "aws_eip" "flask_eip" {
+ resource "aws_eip" "flask_eip" {
   instance = aws_instance.flask_app.id
   vpc      = true
 }
@@ -113,3 +138,4 @@ output "ssh_private_key_pem" {
   value       = tls_private_key.ssh_key.private_key_pem
   sensitive   = true
 }
+  
