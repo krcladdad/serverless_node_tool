@@ -10,7 +10,7 @@ def client():
         yield client
 
 def test_contact_get(client):
-    response = client.get('/contact')
+    response = client.get('/store-contactUs')
     assert response.status_code == 200
     assert b'contact' in response.data
 
@@ -26,7 +26,7 @@ def test_contact_post_success(mock_post, client):
         'message': 'Hello!',
         'image': (io.BytesIO(b"fake image data"), 'test.jpg')
     }
-    response = client.post('/contact', data=data, content_type='multipart/form-data')
+    response = client.post('/store-contactUs', data=data, content_type='multipart/form-data')
     assert response.status_code == 200
     assert b'Your contact request has been sent!' in response.data
 
@@ -34,7 +34,7 @@ def test_contact_post_success(mock_post, client):
 def test_notes_get(mock_post, client):
     mock_post.return_value.json = lambda: [{'id': '1', 'note': 'Test Note'}]
     mock_post.return_value.raise_for_status = lambda: None
-    response = client.get('/notes')
+    response = client.get('/note')
     assert response.status_code == 200
     assert b'notes' in response.data
 
@@ -44,6 +44,6 @@ def test_notes_add(mock_post, client):
         type('Response', (), {'json': lambda: {'status': 'added'}, 'raise_for_status': lambda: None})(),
         type('Response', (), {'json': lambda: [{'id': '1', 'note': 'New Note'}], 'raise_for_status': lambda: None})()
     ]
-    response = client.post('/notes', data={'event': 'add', 'note': 'New Note'})
+    response = client.post('/note', data={'event': 'add', 'note': 'New Note'})
     assert response.status_code == 200
     assert b'Note added to DynamoDB!' in response.data

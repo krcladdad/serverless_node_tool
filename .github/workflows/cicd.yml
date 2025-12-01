@@ -26,6 +26,10 @@ jobs:
         run: python -m py_compile app.py
 
       - name: Run unit tests
+        env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECURITY_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1
         run: PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q
         
   docker:
