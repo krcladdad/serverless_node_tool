@@ -1,0 +1,16 @@
+<script>
+    
+        // JS helper to populate delete modal with the id and update the form action
+        function openDeleteModal(id){
+            var input = document.getElementById('del-id-input');
+            if(input) input.value = id;
+        }
+
+        // JS helper to populate edit modal with id and current text and update the form action
+        function openEditModal(id, text){
+            var idInput = document.getElementById('edit-id-input');
+            var textInput = document.getElementById('edit-note-text');
+            if(idInput) idInput.value = id;
+            if(textInput) textInput.value = text || '';
+        }
+</script>

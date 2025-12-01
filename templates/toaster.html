@@ -1,0 +1,32 @@
+ <!--toaster msg: render in a positioned container so toasts appear in top/right or bottom/right corner -->
+        <div class="position-fixed top-0 end-0 p-3" style="z-index: 9999">
+        {%- if toasters_display %}
+            {%- for toast in toasters %}
+                <div class="toast align-items-center text-bg-{{ toast.type }} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ toast.message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {%- endfor %}
+        {%- else %}
+        {%- endif %}
+        </div>
+
+    <script>
+            // show bootstrap toasts when present
+            document.addEventListener('DOMContentLoaded', function () {
+                var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+                toastElList.forEach(function (toastEl) {
+                    try {
+                        var t = new bootstrap.Toast(toastEl, { autohide: true, delay: 4000 });
+                        t.show();
+                    } catch (err) {
+                        // bootstrap not available (maybe wrong import) — silently ignore
+                        console.warn('Toast show failed:', err);
+                    }
+                });
+            });
+    </script>
