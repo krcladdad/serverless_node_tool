@@ -25,12 +25,12 @@ jobs:
       - name: Syntax check
         run: python -m py_compile app.py
 
-      # - name: Run unit tests
-      #   env:
-      #     AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      #     AWS_SECURITY_ACCESS_KEY: ${{ secrets.AWS_SECURITY_ACCESS_KEY }}
-      #     AWS_REGION: ${{ secrets.AWS_REGION }}
-      #   run: PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q
+      - name: Run unit tests
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECURITY_ACCESS_KEY: ${{ secrets.AWS_SECURITY_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: PYTHONPATH=. pytest --maxfail=1 --disable-warnings -q
         
   docker:
     needs: test
@@ -44,15 +44,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/flask-app:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+
       - name: success message
         run: echo "Tests passed successfully!"
-
-      # - name: Build and push Docker image
-      #   run: |
-      #     docker build -t ${{ secrets.DOCKER_USERNAME }}/flask-app:latest .
-      #     docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-
-
+        
   # terraform:
   #   needs: docker
   #   runs-on: ubuntu-latest
