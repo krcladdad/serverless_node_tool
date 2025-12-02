@@ -431,7 +431,7 @@ resource "aws_instance" "flask_serverless_app" {
   ami           = "ami-0fa3fe0fa7920f68e" # Amazon Linux 2 AMI
   instance_type = "t2.micro"
   key_name      = aws_key_pair.deployer_key.key_name
-  security_groups = [aws_security_group.flask_sg.name]
+  vpc_security_group_ids = [aws_security_group.flask_sg.id]
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   
