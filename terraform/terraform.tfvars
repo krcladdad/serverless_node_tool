@@ -1,1 +1,1 @@
-docker_image = "kladdad/flask-app:latest"
+# docker_image = "kladdad/flask-app:latest"
