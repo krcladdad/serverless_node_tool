@@ -12,10 +12,10 @@ resource "aws_s3_bucket" "my_bucket" {
 # -------------------------------
 # DynamoDB Table
 # -------------------------------
- resource "aws_dynamodb_table" "note_table" {
-  name           = var.note_table_name
-  billing_mode   = "pay_per_request"
-  hash_key       = "id"
+resource "aws_dynamodb_table" "note_table" {
+  name         = var.note_table_name
+  billing_mode = "pay_per_request"
+  hash_key     = "id"
 
   attribute {
     name = "id"
@@ -24,13 +24,14 @@ resource "aws_s3_bucket" "my_bucket" {
 }
 
 resource "aws_dynamodb_table" "contactus_table" {
-  name          =var.contactus_table_name
-  billing_mode  = "pay_per_request"
-  hash_key      = "id"
+  name         = var.contactus_table_name
+  billing_mode = "pay_per_request"
+  hash_key     = "id"
+
   attribute {
     name = "id"
     type = "S"
-  } 
+  }
 }
 
 
@@ -77,30 +78,30 @@ resource "aws_iam_role_policy_attachment" "lambda_admin" {
 # Lambda Functions
 # -------------------------------
 resource "aws_lambda_function" "contact_us" {
-  function_name = "ContactUsLambda"
-  handler       = "contact_us.lambda_handler"
-  runtime       = "python3.9"
-  role          = aws_iam_role.lambda_role.arn
-  filename      = "lambda/contact-page-info.zip"
-  source_code_hash = filebase64sha256("lambda/contact-page-info.zip")
+  function_name     = "ContactUsLambda"
+  handler           = "contact_us.lambda_handler"
+  runtime           = "python3.9"
+  role              = aws_iam_role.lambda_role.arn
+  filename          = "lambda/contact-page-info.zip"
+  source_code_hash  = filebase64sha256("lambda/contact-page-info.zip")
 }
 
 resource "aws_lambda_function" "notes" {
-  function_name = "NotesLambda"
-  handler       = "notes.lambda_handler"
-  runtime       = "python3.9"
-  role          = aws_iam_role.lambda_role.arn
-  filename      = "lambda/flaskNoteTools.zip"
-  source_code_hash = filebase64sha256("lambda/flaskNoteTools.zip")
+  function_name     = "NotesLambda"
+  handler           = "notes.lambda_handler"
+  runtime           = "python3.9"
+  role              = aws_iam_role.lambda_role.arn
+  filename          = "lambda/flaskNoteTools.zip"
+  source_code_hash  = filebase64sha256("lambda/flaskNoteTools.zip")
 }
 
 resource "aws_lambda_function" "upload" {
-  function_name = "UploadLambda"
-  handler       = "upload.lambda_handler"
-  runtime       = "python3.9"
-  role          = aws_iam_role.lambda_role.arn
-  filename      = "lambda/upload-image.zip"
-  source_code_hash = filebase64sha256("lambda/upload-image.zip")
+  function_name     = "UploadLambda"
+  handler           = "upload.lambda_handler"
+  runtime           = "python3.9"
+  role              = aws_iam_role.lambda_role.arn
+  filename          = "lambda/upload-image.zip"
+  source_code_hash  = filebase64sha256("lambda/upload-image.zip")
 }
 
 
@@ -295,11 +296,12 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   depends_on = [
     aws_api_gateway_integration.contact_integration,
     aws_api_gateway_integration.notes_integration,
-    aws_api_gateway_integration.upload_integration
+    aws_api_gateway_integration.upload_integration,
   ]
-  rest_api_id = aws_api_gateway_rest_api.my_api.id  
-  
- # Force redeployment when integrations change
+
+  rest_api_id = aws_api_gateway_rest_api.my_api.id
+
+  # Force redeployment when integrations change
   triggers = {
     redeploy = timestamp()
   }
@@ -320,7 +322,7 @@ resource "aws_secretsmanager_secret" "app_secret" {
   description = "Secrets for Flask app"
 }
 
-// Store secrets as key-value pairs in JSON format
+# Store secrets as key-value pairs in JSON format
 resource "aws_secretsmanager_secret_version" "app_secret_version" {
   secret_id     = aws_secretsmanager_secret.app_secret.id
   secret_string = jsonencode({
@@ -334,8 +336,8 @@ resource "aws_secretsmanager_secret_version" "app_secret_version" {
     API_BASE                    = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
     API_BASE_IMAGE              = "https://${aws_api_gateway_rest_api.image_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
     API_BASE_CONTACT            = "https://${aws_api_gateway_rest_api.contact_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-    DOCKER_USERNAME              = "kladdad"
-    DOCKER_PASSWORD              = "Kanchetan@143"
+    DOCKER_USERNAME             = "kladdad"
+    DOCKER_PASSWORD             = "Kanchetan@143"
   })
 }
 
@@ -375,29 +377,29 @@ resource "aws_security_group" "flask_sg" {
   description = "Allow HTTP, SSH, and Flask port"
   vpc_id      = aws_instance.flask_serverless_app.vpc_security_group_ids[0]
 
-  
   ingress {
-      description = "SSH"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   ingress {
-      description = "HTTP"
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-   }
-   
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   ingress {
-      description = "Flask App"
-      from_port   = 5000
-      to_port     = 5000
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
+    description = "Flask App"
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   
   # Egress rules (allow all outbound)
