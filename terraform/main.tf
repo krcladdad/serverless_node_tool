@@ -343,8 +343,8 @@ resource "aws_secretsmanager_secret_version" "app_secret_version" {
     AWS_DYNAMO_TABLE_NOTES     = var.note_table_name
     AWS_DYNAMO_TABLE_CONTACTUS = var.contactus_table_name
     API_BASE                   = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-    API_BASE_IMAGE             = "https://${aws_api_gateway_rest_api.image_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-    API_BASE_CONTACT           = "https://${aws_api_gateway_rest_api.contact_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
+    API_BASE_IMAGE             = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
+    API_BASE_CONTACT           = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
     DOCKER_USERNAME            = "kladdad"
     DOCKER_PASSWORD            = "Kanchetan@143"
   })
