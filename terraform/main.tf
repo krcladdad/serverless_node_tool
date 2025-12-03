@@ -23,7 +23,7 @@ resource "aws_s3_bucket" "my_bucket" {
 # -------------------------------
 resource "aws_dynamodb_table" "note_table" {
   name         = var.note_table_name
-  billing_mode = "pay_per_request"
+  billing_mode = "PROVISIONED"
   hash_key     = "id"
 
   attribute {
@@ -34,7 +34,7 @@ resource "aws_dynamodb_table" "note_table" {
 
 resource "aws_dynamodb_table" "contactus_table" {
   name         = var.contactus_table_name
-  billing_mode = "pay_per_request"
+  billing_mode = "PROVISIONED"
   hash_key     = "id"
 
   attribute {
@@ -91,8 +91,8 @@ resource "aws_lambda_function" "contact_us" {
   handler          = "contact_us.lambda_handler"
   runtime          = "python3.9"
   role             = aws_iam_role.lambda_role.arn
-  filename         = "lambda/contact-page-info.zip"
-  source_code_hash = filebase64sha256("lambda/contact-page-info.zip")
+  filename         = "${path.module}/lambda/contact-page-info.zip"
+  source_code_hash = filebase64sha256("${path.module}/lambda/contact-page-info.zip")
 }
 
 resource "aws_lambda_function" "notes" {
@@ -100,8 +100,8 @@ resource "aws_lambda_function" "notes" {
   handler          = "notes.lambda_handler"
   runtime          = "python3.9"
   role             = aws_iam_role.lambda_role.arn
-  filename         = "lambda/flaskNoteTools.zip"
-  source_code_hash = filebase64sha256("lambda/flaskNoteTools.zip")
+  filename         = "${path.module}/lambda/flaskNoteTools.zip"
+  source_code_hash = filebase64sha256("${path.module}/lambda/flaskNoteTools.zip")
 }
 
 resource "aws_lambda_function" "upload" {
@@ -109,8 +109,8 @@ resource "aws_lambda_function" "upload" {
   handler          = "upload.lambda_handler"
   runtime          = "python3.9"
   role             = aws_iam_role.lambda_role.arn
-  filename         = "lambda/upload-image.zip"
-  source_code_hash = filebase64sha256("lambda/upload-image.zip")
+  filename         = "${path.module}/lambda/upload-image.zip"
+  source_code_hash = filebase64sha256("${path.module}/lambda/upload-image.zip")
 }
 
 

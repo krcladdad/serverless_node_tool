@@ -76,13 +76,10 @@ jobs:
       - name: Terraform Fmt
         run: terraform fmt -check
         working-directory: terraform
-      
-      - name: Terraform message
-        run: echo "fmt done successfully"
 
-      # - name: Terraform Validate
-      #   run: terraform validate
-      #   working-directory: terraform
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform
 
       # - name: Terraform Plan
       #   run: terraform plan
