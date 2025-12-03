@@ -67,6 +67,16 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
+
+      
+      - name: Zip Lambda Functions
+        run: |
+          cd lambda
+          zip contact-page-info.zip contact-page-info.py
+          zip flaskNoteTools.zip flaskNoteTools.py
+          zip upload-image.zip upload-image.py
+        shell: bash
+
       
       - name: Terraform Init
         run: terraform init
