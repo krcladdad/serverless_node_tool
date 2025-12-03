@@ -336,8 +336,8 @@ resource "aws_secretsmanager_secret_version" "app_secret_version" {
   secret_id = aws_secretsmanager_secret.app_secret.id
   secret_string = jsonencode({
     FLASK_SECRET_KEY           = "supersecret"
-    AWS_ACCESS_KEY             = "AKIA3FSTKUYAQA6NJBUX"
-    AWS_SECURITY_ACCESS_KEY    = "Kz59zQGWnDOQL3ppr7Z9kiHdbsNdgVRCVujC1E0m"
+    AWS_ACCESS_KEY             = "AKIA4MTWLNAL5SO2SGMC"
+    AWS_SECURITY_ACCESS_KEY    = "ZnCnZZRZ2TMQyl6IjGyX5babs7KJTECXPpYZDdfk"
     region                     = var.region
     AWS_S3_BUCKET              = aws_s3_bucket.my_bucket.bucket
     AWS_DYNAMO_TABLE_NOTES     = var.note_table_name
