@@ -1,5 +1,14 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
 }
 
 # -------------------------------
@@ -13,9 +22,9 @@ resource "aws_s3_bucket" "my_bucket" {
 # DynamoDB Table
 # -------------------------------
 resource "aws_dynamodb_table" "note_table" {
-  name         = var.note_table_name
-  billing_mode = "pay_per_request"
-  hash_key     = "id"
+  name           = var.note_table_name
+  billing_mode   = "pay_per_request"
+  hash_key       = "id"
 
   attribute {
     name = "id"
@@ -24,9 +33,9 @@ resource "aws_dynamodb_table" "note_table" {
 }
 
 resource "aws_dynamodb_table" "contactus_table" {
-  name         = var.contactus_table_name
-  billing_mode = "pay_per_request"
-  hash_key     = "id"
+  name           = var.contactus_table_name
+  billing_mode   = "pay_per_request"
+  hash_key       = "id"
 
   attribute {
     name = "id"
@@ -375,8 +384,7 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 resource "aws_security_group" "flask_sg" {
   name        = "flask_sg"
   description = "Allow HTTP, SSH, and Flask port"
-  vpc_id      = aws_instance.flask_serverless_app.vpc_security_group_ids[0]
-
+  
   ingress {
     description = "SSH"
     from_port   = 22
@@ -401,8 +409,22 @@ resource "aws_security_group" "flask_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  
-  # Egress rules (allow all outbound)
+  ingress {
+    description = "Alternate HTTP"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -410,61 +432,53 @@ resource "aws_security_group" "flask_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  tags = {
+    Name = "flask_sg"
+  }
 }
-# -----------------
-# create pem file for ssh and attchh to ec2
-# -----------------
+# Generate SSH key pair for EC2 instance
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
-  rsa_bits  = 2048
+  rsa_bits  = 4096
 }
+
 resource "aws_key_pair" "deployer_key" {
   key_name   = "deployer-key"
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
-# -------------------------------
-# create ec2 instance for flask serverless app
-# -------------------------------
-
+# EC2 instance for Flask Serverless App
 resource "aws_instance" "flask_serverless_app" {
-  ami           = "ami-0fa3fe0fa7920f68e" # Amazon Linux 2 AMI
-  instance_type = "t2.micro"
-  key_name      = aws_key_pair.deployer_key.key_name
+  ami                    = "ami-0fa3fe0fa7920f68e" # Amazon Linux 2 AMI
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.deployer_key.key_name
   vpc_security_group_ids = [aws_security_group.flask_sg.id]
-  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
 
-  
-  
   user_data = <<-EOF
-                #!/bin/bash
-                sudo yum update -y
-                sudo yum install -y docker
-                #Start and enable Docker
-                sudo systemctl start docker
-                sudo systemctl enable docker
-                sudo usermod -aG docker ec2-user                
-                
-                
-                # Fetch Docker Hub credentials from AWS Secrets Manager
-                 SECRET=$(aws secretsmanager get-secret-value --secret-id my-docker-credentials     --query SecretString --output text)
-                  USERNAME=$(echo $SECRET | jq -r .DOCKER_USERNAME)
-                  PASSWORD=$(echo $SECRET | jq -r .DOCKER_PASSWORD)
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install -y docker
+              # Start and enable Docker
+              sudo systemctl start docker
+              sudo systemctl enable docker
+              sudo usermod -aG docker ec2-user
 
-                
-                
-                # Login to Docker Hub
-                echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+              # Fetch Docker Hub credentials from AWS Secrets Manager
+              SECRET=$(aws secretsmanager get-secret-value --secret-id my-docker-credentials --query SecretString --output text)
+              USERNAME=$(echo $SECRET | jq -r .DOCKER_USERNAME)
+              PASSWORD=$(echo $SECRET | jq -r .DOCKER_PASSWORD)
 
-                # Pull your Docker image
-                docker pull $USERNAME/flask-app:latest
+              # Login to Docker Hub
+              echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
 
+              # Pull your Docker image
+              docker pull $USERNAME/flask-app:latest
 
-                
-                # Run the container on port 5000
-                docker run -d -p 5000:5000 --name flask-app $USERNAME/flask-app:latest
-                EOF
-              
+              # Run the container on port 5000
+              docker run -d -p 5000:5000 --name flask-app $USERNAME/flask-app:latest
+              EOF
+
   tags = {
     Name = "FlaskServerlessAppInstance"
   }
