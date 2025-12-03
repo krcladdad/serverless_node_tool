@@ -1,16 +1,23 @@
 variable "region" {
- default     = "us-east-1"
+  type    = string
+  default = "us-east-1"
 }
+
 variable "s3_bucket_name" {
- description = "create S3 bucket for image storing"
- default     = "flask-note-tools"
+  description = "create S3 bucket for image storing"
+  type        = string
+  default     = "flask-note-tools"
 }
+
 variable "note_table_name" {
- description = "DynamoDB table name for notes"
- default     = "NotesTable"
+  description = "DynamoDB table name for notes"
+  type        = string
+  default     = "NotesTable"
 }
+
 variable "contactus_table_name" {
- description = "DynamoDB table name for contact us"
- default     = "ContactUs"
+  description = "DynamoDB table name for contact us"
+  type        = string
+  default     = "ContactUs"
 }
 
