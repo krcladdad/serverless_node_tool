@@ -22,9 +22,9 @@ resource "aws_s3_bucket" "my_bucket" {
 # DynamoDB Table
 # -------------------------------
 resource "aws_dynamodb_table" "note_table" {
-  name           = var.note_table_name
-  billing_mode   = "pay_per_request"
-  hash_key       = "id"
+  name         = var.note_table_name
+  billing_mode = "pay_per_request"
+  hash_key     = "id"
 
   attribute {
     name = "id"
@@ -33,9 +33,9 @@ resource "aws_dynamodb_table" "note_table" {
 }
 
 resource "aws_dynamodb_table" "contactus_table" {
-  name           = var.contactus_table_name
-  billing_mode   = "pay_per_request"
-  hash_key       = "id"
+  name         = var.contactus_table_name
+  billing_mode = "pay_per_request"
+  hash_key     = "id"
 
   attribute {
     name = "id"
@@ -87,30 +87,30 @@ resource "aws_iam_role_policy_attachment" "lambda_admin" {
 # Lambda Functions
 # -------------------------------
 resource "aws_lambda_function" "contact_us" {
-  function_name     = "ContactUsLambda"
-  handler           = "contact_us.lambda_handler"
-  runtime           = "python3.9"
-  role              = aws_iam_role.lambda_role.arn
-  filename          = "lambda/contact-page-info.zip"
-  source_code_hash  = filebase64sha256("lambda/contact-page-info.zip")
+  function_name    = "ContactUsLambda"
+  handler          = "contact_us.lambda_handler"
+  runtime          = "python3.9"
+  role             = aws_iam_role.lambda_role.arn
+  filename         = "lambda/contact-page-info.zip"
+  source_code_hash = filebase64sha256("lambda/contact-page-info.zip")
 }
 
 resource "aws_lambda_function" "notes" {
-  function_name     = "NotesLambda"
-  handler           = "notes.lambda_handler"
-  runtime           = "python3.9"
-  role              = aws_iam_role.lambda_role.arn
-  filename          = "lambda/flaskNoteTools.zip"
-  source_code_hash  = filebase64sha256("lambda/flaskNoteTools.zip")
+  function_name    = "NotesLambda"
+  handler          = "notes.lambda_handler"
+  runtime          = "python3.9"
+  role             = aws_iam_role.lambda_role.arn
+  filename         = "lambda/flaskNoteTools.zip"
+  source_code_hash = filebase64sha256("lambda/flaskNoteTools.zip")
 }
 
 resource "aws_lambda_function" "upload" {
-  function_name     = "UploadLambda"
-  handler           = "upload.lambda_handler"
-  runtime           = "python3.9"
-  role              = aws_iam_role.lambda_role.arn
-  filename          = "lambda/upload-image.zip"
-  source_code_hash  = filebase64sha256("lambda/upload-image.zip")
+  function_name    = "UploadLambda"
+  handler          = "upload.lambda_handler"
+  runtime          = "python3.9"
+  role             = aws_iam_role.lambda_role.arn
+  filename         = "lambda/upload-image.zip"
+  source_code_hash = filebase64sha256("lambda/upload-image.zip")
 }
 
 
@@ -333,20 +333,20 @@ resource "aws_secretsmanager_secret" "app_secret" {
 
 # Store secrets as key-value pairs in JSON format
 resource "aws_secretsmanager_secret_version" "app_secret_version" {
-  secret_id     = aws_secretsmanager_secret.app_secret.id
+  secret_id = aws_secretsmanager_secret.app_secret.id
   secret_string = jsonencode({
-    FLASK_SECRET_KEY            = "supersecret"
-    AWS_ACCESS_KEY              = "AKIA3FSTKUYAQA6NJBUX"
-    AWS_SECURITY_ACCESS_KEY     = "Kz59zQGWnDOQL3ppr7Z9kiHdbsNdgVRCVujC1E0m"
-    region                      = var.region
-    AWS_S3_BUCKET               = aws_s3_bucket.my_bucket.bucket
-    AWS_DYNAMO_TABLE_NOTES      = var.note_table_name
-    AWS_DYNAMO_TABLE_CONTACTUS  = var.contactus_table_name
-    API_BASE                    = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-    API_BASE_IMAGE              = "https://${aws_api_gateway_rest_api.image_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-    API_BASE_CONTACT            = "https://${aws_api_gateway_rest_api.contact_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-    DOCKER_USERNAME             = "kladdad"
-    DOCKER_PASSWORD             = "Kanchetan@143"
+    FLASK_SECRET_KEY           = "supersecret"
+    AWS_ACCESS_KEY             = "AKIA3FSTKUYAQA6NJBUX"
+    AWS_SECURITY_ACCESS_KEY    = "Kz59zQGWnDOQL3ppr7Z9kiHdbsNdgVRCVujC1E0m"
+    region                     = var.region
+    AWS_S3_BUCKET              = aws_s3_bucket.my_bucket.bucket
+    AWS_DYNAMO_TABLE_NOTES     = var.note_table_name
+    AWS_DYNAMO_TABLE_CONTACTUS = var.contactus_table_name
+    API_BASE                   = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
+    API_BASE_IMAGE             = "https://${aws_api_gateway_rest_api.image_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
+    API_BASE_CONTACT           = "https://${aws_api_gateway_rest_api.contact_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
+    DOCKER_USERNAME            = "kladdad"
+    DOCKER_PASSWORD            = "Kanchetan@143"
   })
 }
 
@@ -384,7 +384,7 @@ resource "aws_iam_instance_profile" "ec2_instance_profile" {
 resource "aws_security_group" "flask_sg" {
   name        = "flask_sg"
   description = "Allow HTTP, SSH, and Flask port"
-  
+
   ingress {
     description = "SSH"
     from_port   = 22
