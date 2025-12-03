@@ -22,12 +22,12 @@ resource "aws_s3_bucket" "my_bucket" {
 # DynamoDB Table
 # -------------------------------
 resource "aws_dynamodb_table" "note_table" {
-  name         = var.note_table_name
-  billing_mode = "PROVISIONED"
+  name           = var.note_table_name
+  billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
 
-  hash_key     = "id"
+  hash_key = "id"
 
   attribute {
     name = "id"
@@ -36,12 +36,12 @@ resource "aws_dynamodb_table" "note_table" {
 }
 
 resource "aws_dynamodb_table" "contactus_table" {
-  name         = var.contactus_table_name
-  billing_mode = "PROVISIONED" 
+  name           = var.contactus_table_name
+  billing_mode   = "PROVISIONED"
   read_capacity  = 1
   write_capacity = 1
 
-  hash_key     = "id"
+  hash_key = "id"
 
   attribute {
     name = "id"
