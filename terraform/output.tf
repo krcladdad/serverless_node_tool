@@ -3,7 +3,7 @@ output "api_base_url" {
 }
 
 output "s3_bucket_name" {
-  value = aws_s3_bucket.image_bucket.bucket
+  value = aws_s3_bucket.my_bucket.bucket
 }
 
 output "dynamodb_note_table_name" {
@@ -12,10 +12,6 @@ output "dynamodb_note_table_name" {
 
 output "dynamodb_contactus_table_name" {
   value = aws_dynamodb_table.contactus_table.name
-}
-
-output "instance_public_ip" {
-  value = aws_eip.flask_eip.public_ip
 }
 
 output "instance_public_dns" {

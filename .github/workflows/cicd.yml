@@ -69,13 +69,14 @@ jobs:
           terraform_version: 1.5.0
 
       
-      - name: Zip Lambda Functions
+      - name: Zip Lambda Function 
         run: |
-          cd lambda
-          zip contact-page-info.zip contact-page-info.py
-          zip flaskNoteTools.zip flaskNoteTools.py
-          zip upload-image.zip upload-image.py
-        shell: bash
+            mkdir -p terraform/lambda
+            cd lambda
+            zip ../terraform/lambda/contact-page-info.zip contact-page-info.py
+            zip ../terraform/lambda/flaskNoteTools.zip flaskNoteTools.py
+            zip ../terraform/lambda/upload-image.zip upload-image.py
+
 
       
       - name: Terraform Init
