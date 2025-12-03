@@ -91,8 +91,8 @@ resource "aws_lambda_function" "contact_us" {
   handler          = "contact_us.lambda_handler"
   runtime          = "python3.9"
   role             = aws_iam_role.lambda_role.arn
-  filename         = "${path.module}/lambda/contact-page-info.zip"
-  source_code_hash = filebase64sha256("${path.module}/lambda/contact-page-info.zip")
+  filename         = "${path.root}/lambda/contact-page-info.zip"
+  source_code_hash = filebase64sha256("${path.root}/lambda/contact-page-info.zip")
 }
 
 resource "aws_lambda_function" "notes" {
@@ -100,8 +100,8 @@ resource "aws_lambda_function" "notes" {
   handler          = "notes.lambda_handler"
   runtime          = "python3.9"
   role             = aws_iam_role.lambda_role.arn
-  filename         = "${path.module}/lambda/flaskNoteTools.zip"
-  source_code_hash = filebase64sha256("${path.module}/lambda/flaskNoteTools.zip")
+  filename         = "${path.root}/lambda/flaskNoteTools.zip"
+  source_code_hash = filebase64sha256("${path.root}/lambda/flaskNoteTools.zip")
 }
 
 resource "aws_lambda_function" "upload" {
@@ -109,8 +109,8 @@ resource "aws_lambda_function" "upload" {
   handler          = "upload.lambda_handler"
   runtime          = "python3.9"
   role             = aws_iam_role.lambda_role.arn
-  filename         = "${path.module}/lambda/upload-image.zip"
-  source_code_hash = filebase64sha256("${path.module}/lambda/upload-image.zip")
+  filename         = "${path.root}/lambda/upload-image.zip"
+  source_code_hash = filebase64sha256("${path.root}/lambda/upload-image.zip")
 }
 
 
