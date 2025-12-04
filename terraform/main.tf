@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 provider "aws" {
   region = var.region
 }
@@ -12,9 +21,9 @@ resource "aws_iam_role" "ec2_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
+      Effect    = "Allow",
       Principal = { Service = "ec2.amazonaws.com" },
-      Action   = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -25,12 +34,12 @@ resource "aws_iam_role" "ec2_role" {
 resource "aws_iam_policy" "secrets_read_only" {
   name        = "ec2-secrets-read-only"
   description = "Allow EC2 to read only specific Secrets Manager secret"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Effect   = "Allow",
-        Action   = [
+        Effect = "Allow",
+        Action = [
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ],
@@ -144,7 +153,7 @@ resource "aws_instance" "flask_serverless_app" {
   vpc_security_group_ids = [aws_security_group.flask_sg.id]
 
   # 🔹 Attach the instance profile created above
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
   user_data = <<-EOF
               #!/bin/bash
@@ -190,10 +199,10 @@ resource "aws_secretsmanager_secret_policy" "allow_role_read" {
     Version = "2012-10-17",
     Statement = [
       {
-        Sid      = "AllowEC2RoleGetSecret",
-        Effect   = "Allow",
+        Sid       = "AllowEC2RoleGetSecret",
+        Effect    = "Allow",
         Principal = { AWS = aws_iam_role.ec2_role.arn },
-        Action   = [
+        Action = [
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret"
         ],
