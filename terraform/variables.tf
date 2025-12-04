@@ -1,23 +1,11 @@
-variable "region" {
-  type    = string
-  default = "us-east-1"
-}
-
-variable "s3_bucket_name" {
-  description = "create S3 bucket for image storing"
-  type        = string
-  default     = "flask-note-tools"
-}
-
-variable "note_table_name" {
-  description = "DynamoDB table name for notes"
-  type        = string
-  default     = "NotesTable"
-}
-
-variable "contactus_table_name" {
-  description = "DynamoDB table name for contact us"
-  type        = string
-  default     = "ContactUs"
-}
+variable "flask_secret_key" {}
+variable "docker_password" {}
+variable "docker_username" {}
+variable "aws_access_key" {}
+variable "aws_secret_key" {}
+variable "region" {}
+variable "s3_bucket_name" {}
+variable "note_table_name" {}
+variable "contactus_table_name" {}
+variable "secret_arn" {}
 

@@ -1,19 +1,3 @@
-output "api_base_url" {
-  value = "https://${aws_api_gateway_rest_api.my_api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.dev_stage.stage_name}"
-}
-
-output "s3_bucket_name" {
-  value = aws_s3_bucket.my_bucket.bucket
-}
-
-output "dynamodb_note_table_name" {
-  value = aws_dynamodb_table.note_table.name
-}
-
-output "dynamodb_contactus_table_name" {
-  value = aws_dynamodb_table.contactus_table.name
-}
-
 output "instance_public_dns" {
   value = aws_instance.flask_serverless_app.public_dns
 }
