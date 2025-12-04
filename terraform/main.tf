@@ -201,4 +201,4 @@ resource "aws_secretsmanager_secret_policy" "allow_role_read" {
       }
     ]
   })
-}
+} 
